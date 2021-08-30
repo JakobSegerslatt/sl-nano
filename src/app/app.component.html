@@ -14,7 +14,10 @@
             [matAutocomplete]="auto"
           />
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of fromSites" [value]="option">
+            <mat-option
+              *ngFor="let option of fromSites$ | async"
+              [value]="option"
+            >
               {{ option.Name }}
             </mat-option>
           </mat-autocomplete>
@@ -29,7 +32,10 @@
             [matAutocomplete]="auto"
           />
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of toSites" [value]="option">
+            <mat-option
+              *ngFor="let option of toSites$ | async"
+              [value]="option"
+            >
               {{ option.Name }}
             </mat-option>
           </mat-autocomplete>

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SL_PLATSUPPSLAG_KEY, SL_REALTID_4_KEY } from 'src/KEYS';
 import { LocalstorageService } from './local-storage.service';
 import { SLRealtime, SLResponse, SLSite } from './models';
 
@@ -18,7 +17,7 @@ export class SlApiService {
   ) {}
 
   fetchPlaces(search: string): Observable<SLSite[]> {
-    const url = `${SL_API_V2}/typeahead.json?key=${SL_PLATSUPPSLAG_KEY}&searchstring=${search}`;
+    const url = `api/fetch-places?search=${search}`;
     return this.cacheResponse(
       'SL_SITES',
       this.http.get<SLResponse<SLSite[]>>(url)
@@ -34,7 +33,7 @@ export class SlApiService {
     siteId: number,
     timwWindow: number = 60
   ): Observable<SLRealtime> {
-    const url = `${SL_API_V2}/realtimedeparturesV4.json?key=${SL_REALTID_4_KEY}&siteid=${siteId}&timewindow=${timwWindow}&Bus=false&Metro=false`;
+    const url = `api/fetch-realtime/${siteId}?timewindow=${timwWindow}`;
     return this.cacheResponse(
       'SL_REALTIME',
       this.http.get<SLResponse<SLRealtime>>(url)

@@ -6,7 +6,8 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { differenceInMinutes } from 'date-fns';
-import { timer } from 'rxjs';
+import { Observable, timer } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Departure, JourneyDirection, SLRealtime, SLSite } from '../models';
 import { SlApiService } from '../sl-api.service';
 
@@ -18,33 +19,36 @@ import { SlApiService } from '../sl-api.service';
 export class StationComponent implements OnInit, OnChanges {
   @Input() from: SLSite;
   @Input() to: SLSite;
-  info: SLRealtime = {} as any;
-
-  departures: Departure[] = [];
+  allDepartures: SLRealtime = {} as any;
+  departures$: Observable<Departure[]>;
+  stopAreaName: string;
 
   constructor(private slService: SlApiService) {}
 
   ngOnInit(): void {
-    timer(0, 30 * 1000).subscribe(() => this.fetch());
+    this.departures$ = timer(0, 30 * 1000).pipe(switchMap(() => this.fetch()));
   }
 
   ngOnChanges({ from }: SimpleChanges) {
     if (from && !from.isFirstChange()) {
-      this.fetch();
+      this.departures$ = timer(0, 30 * 1000).pipe(
+        switchMap(() => this.fetch())
+      );
     }
   }
 
   ngOnDestroy() {}
 
-  fetch() {
-    this.slService
-      .fetchRealtime(this.from.SiteId, 60)
-      .subscribe((departures) => {
-        this.info = departures;
-        this.departures = departures.Trains.filter(
+  fetch(): Observable<Departure[]> {
+    return this.slService.fetchRealtime(this.from.SiteId, 60).pipe(
+      map((departures) => {
+        this.allDepartures = departures;
+        this.stopAreaName = departures.Trains[0].StopAreaName;
+        return departures.Trains.filter(
           (t) => t.JourneyDirection === JourneyDirection.NORTH
         );
-      });
+      })
+    );
   }
 
   timeLeft(time: Date) {

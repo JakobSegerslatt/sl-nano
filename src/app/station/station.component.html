@@ -1,6 +1,6 @@
 <app-clock class="block ml-2 mb-2 text-l"></app-clock>
 <div>
-  <div *ngFor="let train of departures | slice: 0:5" class="departure">
+  <div *ngFor="let train of departures$ | async | slice: 0:5" class="departure">
     <div class="flex justify-between items-center">
       <div>
         <h1>{{ timeLeft(train.ExpectedDateTime) }} min</h1>

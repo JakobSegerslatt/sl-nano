@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config proxy.conf.js --disable-host-check",
+    "start": "node dist/sl-go/server/main.js",
+    "start:proxy": "ng serve --proxy-config proxy.conf.js --disable-host-check",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -27,6 +28,7 @@
     "@angular/router": "~12.2.0",
     "@ngneat/tailwind": "^7.0.3",
     "@nguniversal/express-engine": "^12.1.0",
+    "axios": "^0.21.1",
     "date-fns": "^2.23.0",
     "express": "^4.15.2",
     "rxjs": "~6.6.0",

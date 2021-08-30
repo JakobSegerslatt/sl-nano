@@ -1,8 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
-import { debounceTime, startWith, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { debounceTime, startWith, switchMap, tap } from 'rxjs/operators';
 import { LocalstorageService } from './local-storage.service';
 import { SLSite } from './models';
 import { HUDDINGE, STOCKHOLM_C } from './sites';
@@ -26,6 +26,8 @@ export class AppComponent {
 
   fromSites: SLSite[] = [];
   toSites: SLSite[] = [];
+  fromSites$: Observable<SLSite[]>;
+  toSites$: Observable<SLSite[]>;
 
   static isBrowser = new BehaviorSubject<boolean>(null as any);
 
@@ -42,42 +44,44 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.fromCtrl.valueChanges
+    this.fromSites$ = this.fromCtrl.valueChanges
       .pipe(startWith(this.fromCtrl.value))
       .pipe(
         debounceTime(250),
-        tap((value) => {
+        switchMap((value) => {
           const place = value?.SiteId
             ? value.SiteId
             : typeof value === 'string'
             ? value
             : '';
-          this.slService.fetchPlaces(place).subscribe((sites) => {
-            this.fromSites = sites;
-            this.selectedFrom = sites[0];
-          });
           this.localstorageService.setItem('SLGO_FROM', place);
+          return this.slService.fetchPlaces(place).pipe(
+            tap((sites) => {
+              this.fromSites = sites;
+              this.selectedFrom = sites[0];
+            })
+          );
         })
-      )
-      .subscribe();
+      );
 
-    this.toCtrl.valueChanges
+    this.toSites$ = this.toCtrl.valueChanges
       .pipe(startWith(this.toCtrl.value))
       .pipe(
         debounceTime(250),
-        tap((value) => {
+        switchMap((value) => {
           const place = value?.SiteId
             ? value.SiteId
             : typeof value === 'string'
             ? value
             : '';
-          this.slService.fetchPlaces(place).subscribe((sites) => {
-            this.toSites = sites;
-            this.selectedFrom = sites[0];
-          });
           this.localstorageService.setItem('SLGO_TO', place);
+          return this.slService.fetchPlaces(place).pipe(
+            tap((sites) => {
+              this.toSites = sites;
+              this.selectedTo = sites[0];
+            })
+          );
         })
-      )
-      .subscribe();
+      );
   }
 }

@@ -144,10 +144,7 @@
               "serverTarget": "sl-go:server:production"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "proxyConfig": "./proxy.conf.js"
-          }
+          "defaultConfiguration": "development"
         },
         "prerender": {
           "builder": "@nguniversal/builders:prerender",
