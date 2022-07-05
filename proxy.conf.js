@@ -6,6 +6,15 @@ const PROXY_CONFIG = [
     changeOrigin: true,
     logLevel: "debug",
   },
+  {
+    context: ["/api"],
+    target: "https://sl-go-324507.ey.r.appspot.com",
+    secure: true,
+    changeOrigin: true,
+    logLevel: "debug",
+  },
+
+  
 ];
 
 module.exports = PROXY_CONFIG;

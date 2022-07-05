@@ -30,7 +30,14 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
+  /**
+   * API ENDPOINTS
+   */
+
+  /**
+   * Platsuppslag
+   * Ger info om en specifik station
+   */
   server.get('/api/fetch-places', (req, res) => {
     const search = req.query.search || '';
     const url = `${SL_API_V2}/typeahead.json?key=${SL_PLATSUPPSLAG_KEY}&searchstring=${search}`;
@@ -43,7 +50,29 @@ export function app(): express.Express {
         res.status(error.status).send(error.data);
       });
   });
+  /**
+   * Realtids info
+   * Realtids info om en speficik station vid en viss tid
+   */
   server.get('/api/fetch-realtime/:id', (req, res) => {
+    const siteId = req.params.id;
+    const timwWindow = req.query.timwWindow || 60;
+    const url = `${SL_API_V2}/realtimedeparturesV4.json?key=${SL_REALTID_4_KEY}&siteid=${siteId}&timewindow=${timwWindow}&Bus=false&Metro=false`;
+
+    axios(url)
+      .then((response: AxiosResponse) => {
+        res.status(response.status).send(response.data);
+      })
+      .catch((error: AxiosResponse) => {
+        res.status(error.status).send(error.data);
+      });
+  });
+
+  /**
+   * Reseplanerare info
+   * Realtids info om en speficik station vid en viss tid
+   */
+  server.get('/api/fetch-planner/:id', (req, res) => {
     const siteId = req.params.id;
     const timwWindow = req.query.timwWindow || 60;
     const url = `${SL_API_V2}/realtimedeparturesV4.json?key=${SL_REALTID_4_KEY}&siteid=${siteId}&timewindow=${timwWindow}&Bus=false&Metro=false`;

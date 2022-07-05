@@ -49,15 +49,18 @@ export class AppComponent {
       .pipe(
         debounceTime(250),
         switchMap((value) => {
-          const place = value?.SiteId
-            ? value.SiteId
-            : typeof value === 'string'
-            ? value
-            : '';
+          // Parse it
+          const place = parseInput(value);
+
+          // Save it as the last FROM option
           this.localstorageService.setItem('SLGO_FROM', place);
+
+          // Search for the string (free text or siteId)
           return this.slService.fetchPlaces(place).pipe(
             tap((sites) => {
               this.fromSites = sites;
+
+              // Set first option as selected
               this.selectedFrom = sites[0];
             })
           );
@@ -69,19 +72,41 @@ export class AppComponent {
       .pipe(
         debounceTime(250),
         switchMap((value) => {
-          const place = value?.SiteId
-            ? value.SiteId
-            : typeof value === 'string'
-            ? value
-            : '';
+          const place = parseInput(value);
+
+          // Save it as the last DESTINATION option
           this.localstorageService.setItem('SLGO_TO', place);
+
+          // Search for the string (free text or siteId)
           return this.slService.fetchPlaces(place).pipe(
             tap((sites) => {
               this.toSites = sites;
+
+              // Set first option as selected
               this.selectedTo = sites[0];
             })
           );
         })
       );
   }
+
+  /** Switches the places around */
+  swap() {
+    const originSelectedFrom = this.selectedFrom;
+    const originSelectedTo = this.selectedTo;
+
+    this.fromCtrl.setValue(originSelectedTo);
+    this.toCtrl.setValue(originSelectedFrom);
+  }
+}
+
+export function parseInput(value: string | SLSite): string {
+  const parsed = (value as SLSite)?.SiteId
+    ? ((value as SLSite).SiteId as any)
+    : typeof value === 'string'
+    ? value
+    : '';
+
+  // Turn number into string
+  return parsed || '' + '';
 }

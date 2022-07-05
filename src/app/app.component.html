@@ -1,46 +1,50 @@
-<mat-toolbar color="primary">
+<!-- <mat-toolbar color="primary">
   <span>{{ title }}</span>
-</mat-toolbar>
+</mat-toolbar> -->
 <div class="app-container">
   <div class="app-content">
     <mat-card>
-      <mat-card-title>
-        <mat-form-field class="w-full" appearance="fill">
-          <mat-label>Nästa avgång från</mat-label>
-          <input
-            type="text"
-            matInput
-            [formControl]="fromCtrl"
-            [matAutocomplete]="auto"
-          />
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option
-              *ngFor="let option of fromSites$ | async"
-              [value]="option"
-            >
-              {{ option.Name }}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
+      <div class="w-full flex items-center">
+        <div class="flex-grow">
+          <mat-form-field class="w-full" appearance="fill">
+            <mat-label>Nästa avgång från</mat-label>
+            <input
+              type="text"
+              matInput
+              [formControl]="fromCtrl"
+              [matAutocomplete]="auto"
+            />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option
+                *ngFor="let option of fromSites$ | async"
+                [value]="option"
+              >
+                {{ option.Name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
 
-        <mat-form-field class="w-full" appearance="fill">
-          <mat-label>Destination</mat-label>
-          <input
-            type="text"
-            matInput
-            [formControl]="toCtrl"
-            [matAutocomplete]="auto"
-          />
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option
-              *ngFor="let option of toSites$ | async"
-              [value]="option"
-            >
-              {{ option.Name }}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </mat-card-title>
+          <mat-form-field class="w-full" appearance="fill">
+            <mat-label>Destination</mat-label>
+            <input
+              type="text"
+              matInput
+              [formControl]="toCtrl"
+              [matAutocomplete]="auto"
+            />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option
+                *ngFor="let option of toSites$ | async"
+                [value]="option"
+              >
+                {{ option.Name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <button mat-icon-button  (click)="swap()"><mat-icon>swap_vert</mat-icon></button>
+      </div>
 
       <mat-card-content>
         <app-station
