@@ -4,7 +4,13 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { objectToQueryParams } from 'src/utils';
 import { LocalstorageService } from './local-storage.service';
-import { RoutePlannerResponse, SLRealtime, SLResponse, SLSite, Trip } from './models';
+import {
+  RoutePlannerResponse,
+  SLRealtime,
+  SLResponse,
+  SLSite,
+  Trip
+} from './models';
 
 const SL_API_V2 = '/api2';
 
@@ -47,7 +53,9 @@ export class SlApiService {
       destExtId: toSiteId,
     });
     const url = `api/fetch-route-planner?${queryParams}`;
-    return this.http.get<RoutePlannerResponse>(url).pipe(map((res) => mapTrips(res.Trip)));
+    return this.http
+      .get<RoutePlannerResponse>(url)
+      .pipe(map((res) => mapTrips(res.Trip)));
   }
 
   cacheResponse<T>(
@@ -81,23 +89,34 @@ export class SlApiService {
   }
 }
 function mapTrips(trips: Trip[]): Trip[] {
-  return trips.map(t => {
+  return trips.map((t) => {
     return {
       ...t,
       LegList: {
         ...t.LegList,
-        Leg: t.LegList.Leg.map(l => {
-          const combinedDate = (l.Origin.rtDate || l.Origin.date) + ' ' +  (l.Origin.rtTime || l.Origin.time);
+        Leg: t.LegList.Leg.map((l) => {
+          const originDate =
+            (l.Origin.rtDate || l.Origin.date) +
+            ' ' +
+            (l.Origin.rtTime || l.Origin.time);
+
+            const destinationDate =
+            (l.Destination.rtDate || l.Destination.date) +
+            ' ' +
+            (l.Destination.rtTime || l.Destination.time);
           return {
             ...l,
             Origin: {
               ...l.Origin,
-              ExpectedDateTime: new Date(combinedDate)
-            }
-          }
-        })
-      }
-    }
-  })
+              ExpectedDateTime: new Date(originDate),
+            },
+            Destination: {
+              ...l.Destination,
+              ExpectedDateTime: new Date(destinationDate),
+            },
+          };
+        }),
+      },
+    };
+  });
 }
-

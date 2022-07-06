@@ -30,6 +30,12 @@ export class RoutePlannerComponent implements OnInit, OnChanges, OnDestroy {
   timerSub: Subscription;
   triggerSub: Subscription;
 
+  categoryIcon = {
+    TRN: 'directions_railway',
+    BUS: 'directions_bus',
+    MET: 'directions_subway'
+  }
+
   constructor(private slService: SlApiService) {}
 
   ngOnInit(): void {
@@ -45,7 +51,6 @@ export class RoutePlannerComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges({ from }: SimpleChanges) {
     if (from && !from.isFirstChange()) {
-      this.trips = [];
       this.resetTimer();
     }
   }
@@ -54,6 +59,11 @@ export class RoutePlannerComponent implements OnInit, OnChanges, OnDestroy {
     this.timerSub?.unsubscribe();
     this.triggerSub?.unsubscribe();
   }
+
+  categoryIcons(category: string): string {
+    return (this.categoryIcon as any)[category];
+  }
+  
 
   resetTimer() {
     this.timerSub?.unsubscribe();

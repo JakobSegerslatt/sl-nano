@@ -143,6 +143,7 @@ export interface Leg {
   number: string;
   category: string;
   type: string;
+  duration?: string;
   reachable: boolean;
   redirected: boolean;
   direction: string;

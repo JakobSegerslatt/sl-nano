@@ -2,29 +2,43 @@
 <div>
   <div *ngFor="let trip of trips | slice: 0:5" class="departure">
     <div
-      *ngFor="let leg of trip.LegList.Leg"
-      class="flex justify-between items-center"
+      *ngFor="let leg of trip.LegList.Leg; first as isFirst"
+      [class.follow-leg]="!isFirst"
     >
-      <div>
-        <span class="flex items-baseline">
-          <h2>{{ minutesLeft(leg.Origin.ExpectedDateTime) }} min</h2>
-          <span class="ml-2">
-            <h4>{{ secondsLeft(leg.Origin.ExpectedDateTime) }} s</h4>
-          </span>
-        </span>
-        <div class="mt-2  text-l">
-          ({{ leg.Origin.ExpectedDateTime | date: "HH:mm" }})
+      <ng-container [ngSwitch]="leg.type">
+        <ng-container *ngSwitchCase="'WALK'">
+          <div class="flex items-center">
+            <mat-icon class="mr-2">directions_walk</mat-icon>
+            <h4>
+              Gå {{ leg.duration | duration }} till {{ leg.Destination.name }}
+            </h4>
+          </div>
+        </ng-container>
+
+        <div *ngSwitchDefault class="flex justify-between items-center">
+          <div>
+            <span class="flex items-baseline">
+              <h2>{{ minutesLeft(leg.Origin.ExpectedDateTime) }} min</h2>
+              <span class="ml-2">
+                <h4>{{ secondsLeft(leg.Origin.ExpectedDateTime) }} s</h4>
+              </span>
+            </span>
+            <div class="mt-2 text-l">
+              ({{ leg.Origin.ExpectedDateTime | date: "HH:mm" }} -
+              {{ leg.Destination.ExpectedDateTime | date: "HH:mm" }})
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center">
+              <mat-icon class="mr-2">{{ categoryIcons(leg.category) }}</mat-icon>
+              <div class="chip">{{ leg.name }}</div>
+            </div>
+            <div class="text-right">
+              <b class="text-gray-500">{{ leg.direction }}</b>
+            </div>
+          </div>
         </div>
-      </div>
-      <div>
-        <div class="flex items-center">
-          <mat-icon class="mr-2">train</mat-icon>
-          <div class="chip">{{ leg.name }}</div>
-        </div>
-        <div class="text-right">
-          <b class="text-gray-500">{{ leg.direction }}</b>
-        </div>
-      </div>
+      </ng-container>
     </div>
   </div>
 </div>
