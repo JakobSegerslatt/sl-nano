@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, startWith, switchMap, tap } from 'rxjs/operators';
 import { trackBySiteId } from 'src/utils';
@@ -18,8 +18,8 @@ const GOTO_KEY = 'SLGO_TO';
 })
 export class AppComponent {
   title = 'Från & Till';
-  fromCtrl = new FormControl();
-  toCtrl = new FormControl();
+  fromCtrl = new UntypedFormControl();
+  toCtrl = new UntypedFormControl();
   selectedFrom: SLSite;
   selectedTo: SLSite;
 
