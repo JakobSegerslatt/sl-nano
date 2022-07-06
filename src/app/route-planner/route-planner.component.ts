@@ -45,6 +45,7 @@ export class RoutePlannerComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges({ from }: SimpleChanges) {
     if (from && !from.isFirstChange()) {
+      this.trips = [];
       this.resetTimer();
     }
   }
