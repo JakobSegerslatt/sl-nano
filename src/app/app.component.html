@@ -12,11 +12,11 @@
               type="text"
               matInput
               [formControl]="fromCtrl"
-              [matAutocomplete]="auto"
+              [matAutocomplete]="fromAuto"
             />
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-autocomplete #fromAuto="matAutocomplete" [displayWith]="displayFn">
               <mat-option
-                *ngFor="let option of fromSites$ | async"
+                *ngFor="let option of fromSites$ | async; trackBy: trackBySiteId"
                 [value]="option"
               >
                 {{ option.Name }}
@@ -30,11 +30,11 @@
               type="text"
               matInput
               [formControl]="toCtrl"
-              [matAutocomplete]="auto"
+              [matAutocomplete]="toAuto"
             />
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-autocomplete #toAuto="matAutocomplete" [displayWith]="displayFn">
               <mat-option
-                *ngFor="let option of toSites$ | async"
+                *ngFor="let option of toSites$ | async; trackBy: trackBySiteId"
                 [value]="option"
               >
                 {{ option.Name }}
@@ -43,15 +43,21 @@
           </mat-form-field>
         </div>
 
-        <button mat-icon-button  (click)="swap()"><mat-icon>swap_vert</mat-icon></button>
+        <button mat-icon-button class="ml-3"  (click)="swap()"><mat-icon>swap_vert</mat-icon></button>
       </div>
 
       <mat-card-content>
-        <app-station
+        <!-- <app-station
           *ngIf="selectedFrom"
           [from]="selectedFrom"
           [to]="selectedTo"
-        ></app-station>
+        ></app-station> -->
+
+        <app-route-planner
+        *ngIf="selectedFrom && selectedTo"
+        [from]="selectedFrom"
+        [to]="selectedTo"
+      ></app-route-planner>
       </mat-card-content>
     </mat-card>
   </div>

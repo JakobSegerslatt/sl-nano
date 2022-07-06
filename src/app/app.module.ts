@@ -1,6 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,13 +13,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { ClockComponent } from './clock/clock.component';
+import { RoutePlannerComponent } from './route-planner/route-planner.component';
 import { StationComponent } from './station/station.component';
 
 @NgModule({
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HttpClientModule,
-    FlexLayoutModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -32,7 +31,7 @@ import { StationComponent } from './station/station.component';
     MatChipsModule,
     MatIconModule,
   ],
-  declarations: [AppComponent, StationComponent, ClockComponent],
+  declarations: [AppComponent, StationComponent, ClockComponent, RoutePlannerComponent],
   providers: [],
   bootstrap: [AppComponent],
 })

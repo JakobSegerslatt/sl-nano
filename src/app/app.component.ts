@@ -3,11 +3,14 @@ import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, startWith, switchMap, tap } from 'rxjs/operators';
+import { trackBySiteId } from 'src/utils';
 import { LocalstorageService } from './local-storage.service';
 import { SLSite } from './models';
 import { HUDDINGE, STOCKHOLM_C } from './sites';
 import { SlApiService } from './sl-api.service';
 
+const GOFROM_KEY = 'SLGO_FROM';
+const GOTO_KEY = 'SLGO_TO';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,12 +18,8 @@ import { SlApiService } from './sl-api.service';
 })
 export class AppComponent {
   title = 'Från & Till';
-  fromCtrl = new FormControl(
-    this.localstorageService.getItem('SLGO_FROM') || HUDDINGE.Name
-  );
-  toCtrl = new FormControl(
-    this.localstorageService.getItem('SLGO_TO') || STOCKHOLM_C.Name
-  );
+  fromCtrl = new FormControl();
+  toCtrl = new FormControl();
   selectedFrom: SLSite;
   selectedTo: SLSite;
 
@@ -28,6 +27,8 @@ export class AppComponent {
   toSites: SLSite[] = [];
   fromSites$: Observable<SLSite[]>;
   toSites$: Observable<SLSite[]>;
+
+  trackBySiteId = trackBySiteId;
 
   static isBrowser = new BehaviorSubject<boolean>(null as any);
 
@@ -44,6 +45,13 @@ export class AppComponent {
   }
 
   ngOnInit() {
+    this.fromCtrl.setValue(
+      this.localstorageService.getItem(GOFROM_KEY) || HUDDINGE.Name
+    );
+
+    this.toCtrl.setValue(
+      this.localstorageService.getItem(GOTO_KEY) || STOCKHOLM_C.Name
+    );
     this.fromSites$ = this.fromCtrl.valueChanges
       .pipe(startWith(this.fromCtrl.value))
       .pipe(
@@ -53,8 +61,9 @@ export class AppComponent {
           const place = parseInput(value);
 
           // Save it as the last FROM option
-          this.localstorageService.setItem('SLGO_FROM', place);
-
+          if (value?.SiteId) {
+            this.localstorageService.setItem(GOFROM_KEY, value.Name);
+          }
           // Search for the string (free text or siteId)
           return this.slService.fetchPlaces(place).pipe(
             tap((sites) => {
@@ -75,7 +84,9 @@ export class AppComponent {
           const place = parseInput(value);
 
           // Save it as the last DESTINATION option
-          this.localstorageService.setItem('SLGO_TO', place);
+          if (value?.SiteId) {
+            this.localstorageService.setItem(GOTO_KEY, value.Name);
+          }
 
           // Search for the string (free text or siteId)
           return this.slService.fetchPlaces(place).pipe(

@@ -4,7 +4,12 @@ import { AxiosResponse } from 'axios';
 import * as express from 'express';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { SL_PLATSUPPSLAG_KEY, SL_REALTID_4_KEY } from 'src/KEYS';
+import {
+  SL_PLATSUPPSLAG_KEY,
+  SL_REALTID_4_KEY,
+  SL_RESEPLANERARE_3_1
+} from 'src/KEYS';
+import { objectToQueryParams } from 'src/utils';
 import 'zone.js/dist/zone-node';
 import { AppServerModule } from './src/main.server';
 const axios = require('axios');
@@ -36,11 +41,14 @@ export function app(): express.Express {
 
   /**
    * Platsuppslag
-   * Ger info om en specifik station
+   * Sök eftere SL platser (stationer)
    */
   server.get('/api/fetch-places', (req, res) => {
-    const search = req.query.search || '';
-    const url = `${SL_API_V2}/typeahead.json?key=${SL_PLATSUPPSLAG_KEY}&searchstring=${search}`;
+    const queryParams = objectToQueryParams({
+      key: SL_PLATSUPPSLAG_KEY,
+      searchstring: req.query.search || '',
+    });
+    const url = `${SL_API_V2}/typeahead.json?${queryParams}`;
 
     axios(url)
       .then((response: AxiosResponse) => {
@@ -55,9 +63,14 @@ export function app(): express.Express {
    * Realtids info om en speficik station vid en viss tid
    */
   server.get('/api/fetch-realtime/:id', (req, res) => {
-    const siteId = req.params.id;
-    const timwWindow = req.query.timwWindow || 60;
-    const url = `${SL_API_V2}/realtimedeparturesV4.json?key=${SL_REALTID_4_KEY}&siteid=${siteId}&timewindow=${timwWindow}&Bus=false&Metro=false`;
+    const queryParams = objectToQueryParams({
+      key: SL_REALTID_4_KEY,
+      siteId: req.params.id,
+      timewindow: req.query.timewindow || 60,
+      Bus: 'false',
+      Metro: 'false',
+    });
+    const url = `${SL_API_V2}/realtimedeparturesV4.json?${queryParams}`;
 
     axios(url)
       .then((response: AxiosResponse) => {
@@ -70,12 +83,19 @@ export function app(): express.Express {
 
   /**
    * Reseplanerare info
-   * Realtids info om en speficik station vid en viss tid
+   * Planera en resa från A till B
+   *
+   * @examples
+   * Trip: api.sl.se/api2/TravelplannerV3_1/trip.<FORMAT>?key=<DIN API NYCKEL>¶metrar
+   * Journey detail: api.sl.se/api2/TravelplannerV3_1/journeydetail.<FORMAT>?key=<DIN API NYCKEL>&<referensparameter>
    */
-  server.get('/api/fetch-planner/:id', (req, res) => {
-    const siteId = req.params.id;
-    const timwWindow = req.query.timwWindow || 60;
-    const url = `${SL_API_V2}/realtimedeparturesV4.json?key=${SL_REALTID_4_KEY}&siteid=${siteId}&timewindow=${timwWindow}&Bus=false&Metro=false`;
+  server.get('/api/fetch-route-planner', (req, res) => {
+    const queryParams = objectToQueryParams({
+      key: SL_RESEPLANERARE_3_1,
+      originExtId: req.query.originExtId,
+      destExtId: req.query.destExtId,
+    });
+    const url = `${SL_API_V2}/TravelplannerV3_1/trip.json?${queryParams}`;
 
     axios(url)
       .then((response: AxiosResponse) => {
